@@ -9,7 +9,7 @@ namespace PokemonReviewApp.Controllers
     [ApiController]
     public class PokemonController : Controller
     {
-        private readonly IPokemonRepository _pokemonRepository;;
+        private readonly IPokemonRepository _pokemonRepository;
         private readonly IMapper _mapper;
 
         public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper)
@@ -32,7 +32,7 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("id")]
         public IActionResult GetPokemon(int id)
         {
-            if (_pokemonRepository.PokemonExists(id))
+            if (!_pokemonRepository.PokemonExists(id))
                 return NotFound();
 
             var pokemon = _mapper.Map<PokemonDto>(_pokemonRepository.GetPokemon(id));
