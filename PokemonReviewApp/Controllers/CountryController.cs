@@ -22,7 +22,7 @@ namespace PokemonReviewApp.Controllers
         [HttpGet]
         public IActionResult GetCountries()
         {
-            var countries = _mapper.Map<List<CountryDto>>(_countryRepository.GetCountries());
+            var countries = _mapper.Map<List<OwnerDto>>(_countryRepository.GetCountries());
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -36,7 +36,7 @@ namespace PokemonReviewApp.Controllers
             if (!_countryRepository.CountryExists(id))
                 return NotFound();
 
-            var country = _mapper.Map<CountryDto>(_countryRepository.GetCountry(id));
+            var country = _mapper.Map<OwnerDto>(_countryRepository.GetCountry(id));
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -47,7 +47,7 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("/owners/{ownerId}")]
         public IActionResult GetCountryOfAnOwner(int ownerId) 
         {
-            var country = _mapper.Map<CountryDto>(_countryRepository.GetCountryByOwner(ownerId));
+            var country = _mapper.Map<OwnerDto>(_countryRepository.GetCountryByOwner(ownerId));
 
             if(!ModelState.IsValid)
                 return BadRequest();
