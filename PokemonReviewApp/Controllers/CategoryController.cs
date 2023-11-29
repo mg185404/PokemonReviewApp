@@ -89,7 +89,7 @@ namespace PokemonReviewApp.Controllers
         [HttpPut]
         public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDto updatedCategory)
         {
-            if (UpdateCategory == null)
+            if (updatedCategory == null)
                 return BadRequest(ModelState);
 
             if (categoryId != updatedCategory.Id)
