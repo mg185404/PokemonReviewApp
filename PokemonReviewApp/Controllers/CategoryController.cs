@@ -65,14 +65,14 @@ namespace PokemonReviewApp.Controllers
 
             var category = _categoryRepository.GetCategories()
                 .Where(c => c.Name == categoryDto.Name).FirstOrDefault();
-            
-            if(category != null)
+
+            if (category != null)
             {
                 ModelState.AddModelError("", "Category already exists");
                 return StatusCode(422, ModelState);
             }
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var categoryMap = _mapper.Map<Category>(categoryDto);
@@ -84,6 +84,32 @@ namespace PokemonReviewApp.Controllers
             }
 
             return Ok("Successfuly created");
+        }
+
+        [HttpPut]
+        public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDto updatedCategory)
+        {
+            if (UpdateCategory == null)
+                return BadRequest(ModelState);
+
+            if (categoryId != updatedCategory.Id)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.CategoryExists(categoryId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var categoryMap = _mapper.Map<Category>(updatedCategory);
+
+            if (!_categoryRepository.UpdateCategory(categoryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating data");
+                return StatusCode(500,ModelState);
+            }
+
+            return Ok("Successfully updated");
         }
     }
 }
