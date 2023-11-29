@@ -45,11 +45,11 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("/owners/{ownerId}")]
-        public IActionResult GetCountryOfAnOwner(int ownerId) 
+        public IActionResult GetCountryOfAnOwner(int ownerId)
         {
             var country = _mapper.Map<CountryDto>(_countryRepository.GetCountryByOwner(ownerId));
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest();
 
             return Ok(country);
@@ -81,6 +81,32 @@ namespace PokemonReviewApp.Controllers
             }
 
             return Ok("Successfuly created");
+        }
+
+        [HttpPut]
+        public IActionResult UpdateCountry(int countryId, [FromBody] CountryDto updatedCategory)
+        {
+            if (updatedCategory == null)
+                return BadRequest(ModelState);
+
+            if (countryId != updatedCategory.Id)
+                return BadRequest(ModelState);
+
+            if (!_countryRepository.CountryExists(countryId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var countryMap = _mapper.Map<Country>(updatedCategory);
+
+            if (!_countryRepository.UpdateCountry(countryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating data");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully updated");
         }
     }
 }
