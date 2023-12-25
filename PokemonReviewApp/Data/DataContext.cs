@@ -41,7 +41,13 @@ namespace PokemonReviewApp.Data
                     .HasOne(p => p.Owner)
                     .WithMany(pc => pc.PokemonOwners)
                     .HasForeignKey(c => c.OwnerId);
-            
+
+         
+            modelBuilder.Entity<Pokemon>()
+                .Property(p => p.Power)
+                .HasDefaultValue(30);
+
+
         }
     }
 }
