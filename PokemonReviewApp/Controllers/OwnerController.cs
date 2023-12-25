@@ -118,5 +118,27 @@ namespace PokemonReviewApp.Controllers
 
             return Ok("Successfully updated");
         }
+
+        [HttpDelete]
+        public IActionResult DeleteOwner(int ownerId)
+        {
+            if (ownerId == 0)
+                return BadRequest(ModelState);
+
+            if (!_ownerRepository.OwnerExists(ownerId))
+                return NotFound();
+
+            var ownerToDelete = _ownerRepository.GetOwner(ownerId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_ownerRepository.DeleteOwner(ownerToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting owner");
+            }
+
+            return Ok("Successfully deleted!");
+        }
     }
 }
