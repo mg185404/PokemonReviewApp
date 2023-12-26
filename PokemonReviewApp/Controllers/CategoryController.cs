@@ -106,10 +106,32 @@ namespace PokemonReviewApp.Controllers
             if (!_categoryRepository.UpdateCategory(categoryMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating data");
-                return StatusCode(500,ModelState);
+                return StatusCode(500, ModelState);
             }
 
             return Ok("Successfully updated");
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            if (categoryId == 0)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.CategoryExists(categoryId))
+                return NotFound();
+
+            var categoryToDelete = _categoryRepository.GetCategory(categoryId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.DeleteCategory(categoryToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting category");
+            }
+
+            return Ok("Successfully deleted!");
         }
     }
 }

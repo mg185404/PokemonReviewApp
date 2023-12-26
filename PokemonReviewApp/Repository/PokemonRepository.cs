@@ -29,9 +29,15 @@ namespace PokemonReviewApp.Repository
                 Category = category,
                 Pokemon = pokemon
             };
-            _context.PokemonCategories.Add(pokemonCategory);   
+            _context.PokemonCategories.Add(pokemonCategory);
 
             _context.Pokemon.Add(pokemon);
+            return Save();
+        }
+
+        public bool DeletePokemon(Pokemon pokemon)
+        {
+            _context.Pokemon.Remove(pokemon);
             return Save();
         }
 
