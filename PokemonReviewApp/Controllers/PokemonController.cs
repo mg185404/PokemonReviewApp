@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PokemonReviewApp.Dto;
 using PokemonReviewApp.Interfaces;
 using PokemonReviewApp.Models;
+using PokemonReviewApp.Repository;
 
 namespace PokemonReviewApp.Controllers
 {
@@ -11,12 +12,14 @@ namespace PokemonReviewApp.Controllers
     public class PokemonController : Controller
     {
         private readonly IPokemonRepository _pokemonRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
 
-        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper)
+        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper, IReviewRepository reviewRepository)
         {
             _pokemonRepository = pokemonRepository;
             _mapper = mapper;
+            _reviewRepository = reviewRepository;
         }
 
         [HttpGet]
@@ -78,7 +81,7 @@ namespace PokemonReviewApp.Controllers
             var pokemon = _pokemonRepository.GetPokemons()
                 .Where(p => p.Name == pokemonDto.Name).FirstOrDefault();
 
-            if (pokemon != null )
+            if (pokemon != null)
             {
                 ModelState.AddModelError("", "Pokemon already exists");
                 return StatusCode(422, ModelState);
@@ -96,6 +99,34 @@ namespace PokemonReviewApp.Controllers
             }
 
             return Ok("Successfuly created");
+        }
+
+        [HttpDelete]
+        public IActionResult DeletePokemon(int pokemonId)
+        {
+            if (pokemonId == 0)
+                return BadRequest(ModelState);
+
+            if (!_pokemonRepository.PokemonExists(pokemonId))
+                return NotFound();
+
+            var reviewsToDelete = _reviewRepository.GetReviewsOfAPokemon(pokemonId);
+            var pokemonToDelete = _pokemonRepository.GetPokemon(pokemonId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_reviewRepository.DeleteReviews(reviewsToDelete.ToList()))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting reviews");
+            }
+
+            if (!_pokemonRepository.DeletePokemon(pokemonToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting pokemon");
+            }
+
+            return Ok("Successfully deleted!");
         }
     }
 }
