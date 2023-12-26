@@ -1,4 +1,4 @@
-﻿ using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Dto;
@@ -113,6 +113,28 @@ namespace PokemonReviewApp.Controllers
             }
 
             return Ok("Successfully updated");
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteReviewer(int revirewerId)
+        {
+            if (revirewerId == 0)
+                return BadRequest(ModelState);
+
+            if (!_reviewerRepository.ReviewerExists(revirewerId))
+                return NotFound();
+
+            var reviewToDelete = _reviewerRepository.GetReviewer(revirewerId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_reviewerRepository.DeleteReviewer(reviewToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting reviewer");
+            }
+
+            return Ok("Successfully deleted!");
         }
     }
 }
